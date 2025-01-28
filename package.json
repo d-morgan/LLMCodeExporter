@@ -1,0 +1,93 @@
+{
+  "name": "llmcodexporter",
+  "version": "1.0.0",
+  "description": "Your Electron app for code exporting",
+  "main": "dist-ts/electron-main.js",
+  "author": "Daniel Morgan",
+  "license": "MIT",
+  "scripts": {
+    "build:ts": "tsc --project tsconfig.json",
+    "watch:ts": "tsc --project tsconfig.json --watch",
+    "dev:vite": "cross-env NODE_ENV=development vite",
+    "dev:electron": "cross-env NODE_ENV=development electron dist-ts/electron-main.js",
+    "dev": "cross-env NODE_ENV=development concurrently \"npm run watch:ts\" \"npm run dev:vite\" \"wait-on dist-ts/electron-main.js && npm run dev:electron\"",
+    "build": "npm run build:ts && vite build",
+    "start": "cross-env NODE_ENV=production electron dist-ts/electron-main.js",
+    "test": "jest",
+    "dist": "electron-builder",
+    "dist:mac-arm64": "electron-builder --mac=dmg --arm64",
+    "dist:mac-intel": "electron-builder --mac=dmg --x64",
+    "pack": "electron-builder --dir"
+  },
+  "build": {
+    "productName": "LLMCodeExporter",
+    "appId": "com.example.codeexporter",
+    "files": [
+      "dist/**",
+      "dist-ts/**",
+      "package.json",
+      "!release"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "YourGitHubUser",
+        "repo": "YourRepo"
+      }
+    ]
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.1",
+    "@mui/material": "^6.4.1",
+    "concurrently": "^7.6.0",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.3.9",
+    "fs-extra": "^11.0.0",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-syntax-highlighter": "^15.6.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.3.1",
+    "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^18.16.3",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitejs/plugin-react": "^4.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^25.9.8",
+    "electron-builder": "^25.1.8",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^4.9.5",
+    "vite": "^4.3.0",
+    "wait-on": "^7.2.0"
+  }
+}

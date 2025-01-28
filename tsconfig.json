@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "jsx": "react-jsx",
+    "strict": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist-ts"
+  },
+  "include": [
+    "electron-main.ts",
+    "preload.ts",
+    "src/**/*",
+    "src/global.d.ts",
+    "tests"
+  ],
+  "exclude": ["node_modules"]
+}
