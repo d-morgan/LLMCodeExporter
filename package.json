@@ -1,7 +1,7 @@
 {
   "name": "llmcodexporter",
   "version": "1.0.0",
-  "description": "Your Electron app for code exporting",
+  "description": "LLM Code Exporter is a tool for exporting code snippets to feed into the LLM Code Editor",
   "main": "dist-ts/electron-main.js",
   "author": "Daniel Morgan",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "pack": "electron-builder --dir"
   },
   "build": {
-    "productName": "LLMCodeExporter",
+    "productName": "LLM Code Exporter",
     "appId": "com.example.codeexporter",
     "files": [
       "dist/**",
@@ -52,8 +52,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "YourGitHubUser",
-        "repo": "YourRepo"
+        "owner": "d-morgan",
+        "repo": "https://github.com/d-morgan/LLMCodeExporter"
       }
     ]
   },
