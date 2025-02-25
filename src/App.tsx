@@ -15,6 +15,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Switch,
 } from '@mui/material';
 
 // MUI Icons
@@ -31,6 +36,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import TokenIcon from '@mui/icons-material/HistoryEdu';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 // Subcomponents
 import DirectorySelection from './components/DirectorySelection';
@@ -38,6 +44,7 @@ import ConfigSection from './components/ConfigSection';
 import FileExplorer from './components/FileExplorer';
 import CodeViewer from './components/CodeViewer';
 import StatItem from './components/StatItem';
+import ProjectStructureViewer from './components/ProjectStructureViewer';
 
 // Hooks
 import { useFileScannerConfig } from './hooks/useFileScannerConfig';
@@ -84,10 +91,14 @@ const App: React.FC = () => {
     handleSelectFile,
     isProcessing,
     setIsProcessing,
+    isWatching,
+    setIsWatching,
   } = useScanFiles();
 
   // UI states
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(
+    localStorage.getItem('darkMode') === 'true'
+  );
   const [showAdvancedConfig, setShowAdvancedConfig] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [showStats, setShowStats] = useState<boolean>(false);
@@ -127,24 +138,44 @@ const App: React.FC = () => {
     if (!ipcRenderer || !selectedDir) return;
     setIsProcessing(true);
 
-    const result: ScannedFile[] = await ipcRenderer.invoke('scan-files', {
+    // Log the settings being passed
+    console.log('Scanning with settings:', {
       directory: selectedDir,
-      config: {
-        allowedFileTypes: allowedTypes,
-        ignoreDirs,
-        ignoreFiles,
-      },
+      allowedTypes: allowedTypes,
+      ignoreDirs: ignoreDirs,
+      ignoreFiles: ignoreFiles,
+      isWatching: isWatching,
     });
 
-    setScannedFiles(result || []);
-    if (result.length === 0) {
-      // Clear selected file if no results
-      handleSelectFile({ filePath: '', content: '' });
-    } else {
-      // optional: auto-select first file
-      handleSelectFile(result[0]);
+    try {
+      const result: ScannedFile[] = await ipcRenderer.invoke('scan-files', {
+        directory: selectedDir,
+        config: {
+          allowedFileTypes: allowedTypes,
+          ignoreDirs,
+          ignoreFiles,
+          enableWatching: isWatching,
+        },
+      });
+
+      setScannedFiles(result || []);
+      if (result.length === 0) {
+        // Clear selected file if no results
+        handleSelectFile({ filePath: '', content: '' });
+      } else {
+        // optional: auto-select first file
+        handleSelectFile(result[0]);
+      }
+
+      // No need to set isWatching here - we're taking it from the toggle state
+      console.log(
+        `Scan complete. Watch mode is ${isWatching ? 'enabled' : 'disabled'}`
+      );
+    } catch (error) {
+      console.error('Error scanning files:', error);
+    } finally {
+      setIsProcessing(false);
     }
-    setIsProcessing(false);
   };
 
   // Build one big markdown block
@@ -374,6 +405,7 @@ const App: React.FC = () => {
               handleDragOver={handleDragOver}
               handleDragLeave={handleDragLeave}
               handleDrop={handleDrop}
+              isWatching={isWatching}
             />
 
             {/* Advanced Config */}
@@ -400,6 +432,53 @@ const App: React.FC = () => {
                     color: darkMode ? '#fff' : 'inherit',
                   }}
                 >
+                  <Box sx={{ mb: 4 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 'medium',
+                        mb: 0.5,
+                        color: 'primary',
+                      }}
+                    >
+                      File Watching Status
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <FormControl component="fieldset">
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography>Inactive</Typography>
+                          <Switch
+                            checked={isWatching}
+                            onChange={(e) => {
+                              const newValue = e.target.checked;
+                              // Only allow turning on if we have a directory
+                              if (newValue && !selectedDir) {
+                                alert('Please select a directory first');
+                                return;
+                              }
+                              setIsWatching(newValue);
+                            }}
+                            color="primary"
+                          />
+                          <Typography>Active</Typography>
+                        </Stack>
+                      </FormControl>
+                    </Box>
+
+                    <Typography
+                      variant="caption"
+                      sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}
+                    >
+                      When active, files are automatically refreshed when
+                      changes are detected. Use the toggle to enable/disable
+                      watching and the Scan/Refresh button to update files
+                      manually.
+                    </Typography>
+                  </Box>
+
+                  <Divider sx={{ my: 4 }} />
+
                   <ConfigSection
                     title="Allowed File Types"
                     items={allowedTypes}
@@ -477,15 +556,21 @@ const App: React.FC = () => {
                 flexWrap: 'wrap',
               }}
             >
-              <Tooltip title="Fetch files and build directory structure">
+              <Tooltip
+                title={
+                  isWatching
+                    ? 'Files are auto-updating, but you can manually refresh if needed'
+                    : 'Refresh files without enabling file watching'
+                }
+              >
                 <Button
                   variant="contained"
-                  color="primary"
+                  color={isWatching ? 'primary' : 'warning'}
                   onClick={handleScan}
                   disabled={!selectedDir || isProcessing}
-                  startIcon={<PlayArrowIcon />}
+                  startIcon={isWatching ? <RefreshIcon /> : <SettingsIcon />}
                 >
-                  Generate
+                  {isWatching ? 'Watching (Refresh)' : 'Refresh Files'}
                 </Button>
               </Tooltip>
 
@@ -499,6 +584,12 @@ const App: React.FC = () => {
                   >
                     Copy Project
                   </Button>
+
+                  <ProjectStructureViewer
+                    darkMode={darkMode}
+                    scannedFiles={scannedFiles}
+                    selectedDir={selectedDir}
+                  />
 
                   <Button
                     variant="contained"

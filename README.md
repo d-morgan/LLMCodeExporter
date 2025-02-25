@@ -8,10 +8,21 @@ LLM Code Exporter is a desktop application built with **Electron**, **React**, a
 
 - **Directory Selection**: Drag-and-drop or browse to select a folder of code.
 - **Configurable File Types**: Specify which file extensions to include or ignore, and which directories or files to skip.
+- **File Watching**: Auto-updates when files change, with clear indicators of watching state.
 - **Project Stats**: View total file count, lines, characters, and approximate tokens. Supports a variety of LLM context limits.
 - **Code Viewer**: Preview file contents and copy them quickly from a side-by-side explorer.
 - **Copy & Export**: Copy the entire project as a single Markdown block or save it out to a `.md` file.
 - **Dark Mode**: Easily toggle between light and dark themes.
+
+---
+
+## Recent Improvements
+
+- **Enhanced File Watching**: The application now includes reliable file watching with clear UI indicators showing when files are being actively monitored. A "Watching Inactive" warning appears when watching is disabled.
+- **File Caching**: Files are now cached on the server side, making the application start faster when reopening the same project.
+- **Improved Refresh Logic**: Added debounce timers to prevent excessive refreshes when multiple file changes occur simultaneously.
+- **Better UI Feedback**: More detailed status indicators show when files are being scanned, watched, or when actions are required.
+- **More Test Coverage**: Additional tests added for file watching, caching, and UI state management.
 
 ---
 
@@ -105,10 +116,14 @@ The final `.app` or `.dmg` (on macOS) or `.exe` (Windows) will appear in the **`
 3. **Configure**
 
    - Expand **Advanced Configuration** to add or remove allowed file extensions, directories, or files to ignore.
+   - Toggle **File Watching Status** to enable or disable automatic file updates.
 
-4. **Generate File List**
+4. **Using File Scanning & Watching**
 
-   - Click **Generate** to scan the folder and read in the code.
+   - Toggle **File Watching Status** to enable or disable automatic file updates.
+   - When watching is inactive, click **Scan Files** to perform a one-time scan.
+   - When watching is active, click **Manual Refresh** to force an immediate update.
+   - The UI will indicate when file watching is active with an "Auto-Updating Files" indicator.
 
 5. **Explore & Copy**
 
@@ -127,6 +142,12 @@ npm test
 ```
 
 - Runs Jest unit tests for both the Electron logic and the React components (in a jsdom environment).
+- Tests cover key functionality including:
+  - File scanning and filtering
+  - File watching and auto-updating
+  - Configuration management
+  - File caching for faster startup
+  - UI component behavior
 - Ensures your code remains stable and well-tested.
 
 ---

@@ -34,7 +34,9 @@ beforeAll(() => {
       loadFile: jest.fn(),
       webContents: {
         openDevTools: jest.fn(),
+        on: jest.fn(),
       },
+      on: jest.fn(),
     })),
     ipcMain: {
       handle: jest.fn(),

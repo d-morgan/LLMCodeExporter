@@ -35,7 +35,8 @@ describe('useFileScannerConfig', () => {
     });
 
     await waitFor(() => {
-      expect(window.electron.ipcRenderer.invoke).toHaveBeenCalledWith(
+      // Add null check to ensure window.electron exists
+      expect(window.electron?.ipcRenderer.invoke).toHaveBeenCalledWith(
         'save-config',
         expect.objectContaining({
           allowedTypes: expect.arrayContaining(['.rs']),

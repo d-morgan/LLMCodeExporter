@@ -1,6 +1,6 @@
 {
   "name": "llmcodexporter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "LLM Code Exporter is a tool for exporting code snippets to feed into the LLM Code Editor",
   "main": "dist-ts/electron-main.js",
   "author": "Daniel Morgan",
@@ -62,6 +62,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.1",
     "@mui/material": "^6.4.1",
+    "chokidar": "^4.0.3",
     "concurrently": "^7.6.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.3.9",
@@ -79,7 +80,7 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-react": "^1.3.2",
     "cross-env": "^7.0.3",
     "electron": "^25.9.8",
     "electron-builder": "^25.1.8",
@@ -87,7 +88,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^4.9.5",
-    "vite": "^4.3.0",
+    "vite": "^6.1.1",
     "wait-on": "^7.2.0"
   }
 }

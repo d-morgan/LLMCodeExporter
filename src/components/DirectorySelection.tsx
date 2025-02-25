@@ -1,6 +1,15 @@
 import React, { DragEvent } from 'react';
-import { Paper, Button, Box, Chip, Tooltip, Typography } from '@mui/material';
+import {
+  Paper,
+  Button,
+  Box,
+  Chip,
+  Tooltip,
+  Typography,
+  Badge,
+} from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface Props {
   darkMode: boolean;
@@ -11,6 +20,7 @@ interface Props {
   handleDragOver: (e: DragEvent<HTMLDivElement>) => void;
   handleDragLeave: () => void;
   handleDrop: (e: DragEvent<HTMLDivElement>) => Promise<void>;
+  isWatching: boolean;
 }
 
 const DirectorySelection: React.FC<Props> = ({
@@ -22,6 +32,7 @@ const DirectorySelection: React.FC<Props> = ({
   handleDragOver,
   handleDragLeave,
   handleDrop,
+  isWatching,
 }) => {
   return (
     <Paper
@@ -84,6 +95,37 @@ const DirectorySelection: React.FC<Props> = ({
           >
             {selectedDir}
           </Typography>
+
+          {isWatching ? (
+            <Chip
+              icon={<VisibilityIcon />}
+              label="Auto-Updating Files"
+              color="info"
+              size="small"
+              variant="outlined"
+              sx={{
+                mt: 1,
+                maxWidth: 250,
+                mx: 'auto',
+                fontSize: '0.75rem',
+              }}
+            />
+          ) : (
+            selectedDir && (
+              <Chip
+                label="Watching Inactive - Toggle to Enable"
+                color="warning"
+                size="small"
+                variant="outlined"
+                sx={{
+                  mt: 1,
+                  maxWidth: 250,
+                  mx: 'auto',
+                  fontSize: '0.75rem',
+                }}
+              />
+            )
+          )}
         </Box>
       )}
     </Paper>
